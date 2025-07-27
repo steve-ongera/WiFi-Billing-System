@@ -1,4 +1,78 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment - {{ plan.name }}{% endblock %}
+
+{% block content %}
+<section class="pricing-card-area section-padding2">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-8 col-lg-10">
+                <div class="section-tittle text-center mb-50">
+                    <h2>Complete Your Payment</h2>
+                    <p>You're almost connected! Complete your payment to enjoy high-speed internet.</p>
+                </div>
+                
+                <div class="single-card text-center">
+                    <div class="card-top">
+                        <p>Selected Plan</p>
+                        <h4>{{ plan.name }}</h4>
+                    </div>
+                    <div class="card-mid">
+                        <h4>${{ plan.price }} <span>/ {{ plan.duration_hours }}hr{% if plan.duration_hours > 1 %}s{% endif %}</span></h4>
+                    </div>
+                    <div class="card-bottom">
+                        <div class="payment-form">
+                            <form id="payment-form" method="post">
+                                {% csrf_token %}
+                                <div class="form-group mb-3">
+                                    <input type="text" class="form-control" placeholder="Card Number" required>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <input type="text" class="form-control" placeholder="MM/YY" required>
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="text" class="form-control" placeholder="CVC" required>
+                                    </div>
+                                </div>
+                                <div class="form-group mt-3">
+                                    <input type="text" class="form-control" placeholder="Cardholder Name" required>
+                                </div>
+                                <button type="submit" class="btn hero-btn mt-3">Pay ${{ plan.price }}</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="{% url 'portal_login' %}" class="btn borders-btn">Back to Plans</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-control {
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        width: 100%;
+    }
+    
+    .payment-form {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+</style>
+{% endblock %}
+
+{% comment %}{% extends 'base.html' %}
 
 {% block title %}Payment - {{ plan.name }}{% endblock %}
 
@@ -106,3 +180,5 @@ document.getElementById('expiry').addEventListener('input', function(e) {
 });
 </script>
 {% endblock %}
+
+{% endcomment %}

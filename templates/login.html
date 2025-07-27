@@ -1,4 +1,261 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}WiFi Portal - Login{% endblock %}
+
+{% block description %}Connect to Wavex Internet - Choose your plan and get connected{% endblock %}
+
+{% block content %}
+<!-- slider Area Start-->
+<div class="slider-area">
+    <div class="slider-active">
+        <!-- Single Slider -->
+        <div class="single-slider slider-height d-flex align-items-center">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-7 col-lg-6 col-md-8 col-sm-10">
+                        <div class="hero__caption">
+                            <h1 data-animation="fadeInUp" data-delay=".4s">Don't suffer the buffer, get super internet.</h1>
+                            <P data-animation="fadeInUp" data-delay=".6s">Welcome to Wavex Internet! Choose your plan below to get connected instantly.</P>
+                            <!-- Hero-btn -->
+                            <div class="hero__btn">
+                                <a href="#packages" class="btn hero-btn mb-10" data-animation="fadeInUp" data-delay=".8s">View Packages</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- slider Area End-->
+
+<!--? About 1 Start-->
+<section class="about-low-area section-padding2" id="about">
+    <div class="container">
+        <div class="row justify-content-between">
+            <div class="col-xl-5 col-lg-6 col-md-9">
+                <!-- about-img -->
+                <div class="about-img">
+                    <img src="{% static 'assets/img/gallery/about1.png' %}" alt="">
+                </div>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-10">
+                <div class="about-caption mb-50">
+                    <!-- Section Tittle -->
+                    <div class="section-tittle mb-35">
+                        <span></span>
+                        <h2>We listen and work together for Great experience.</h2>
+                    </div>
+                    <p>Get instant access to high-speed internet with our flexible payment plans. No contracts, no hassle - just fast, reliable internet when you need it.</p>
+                </div>
+                <a href="#packages" class="btn">View Plans</a>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- About End-->
+
+<!--? service Area Start -->
+<section class="service-area pb-bottom" id="features">
+    <div class="container">
+        <div class="row justify-content-between">
+            <div class="col-lg-6 col-md-9">
+                <!-- Section Tittle -->
+                <div class="section-tittle section-tittle2 mb-50">
+                    <h2 class="mb-35">Mission is to bring all the power of every business.</h2>
+                    <p>Experience lightning-fast internet with our premium service features designed for both personal and business use.</p>
+                    <a href="#packages" class="btn mt-30">View Packages</a>
+                </div>
+            </div>
+            <div class="col-lg-5">
+               <div class="row">
+                   <div class="col-lg-6 col-md-4 col-sm-6">
+                        <div class="single-services mb-30 text-center">
+                            <i class="flaticon-null"></i>
+                            <p>Perfect Coverage</p>
+                        </div>
+                   </div>
+                   <div class="col-lg-6 col-md-4 col-sm-6">
+                        <div class="single-services mb-30 text-center">
+                            <i class="flaticon-null-1"></i>
+                            <p>Live Call Support</p>
+                        </div>
+                   </div>
+                   <div class="col-lg-6 col-md-4 col-sm-6">
+                        <div class="single-services mb-30 text-center">
+                            <i class="flaticon-null-2"></i>
+                            <p>Secured Payment</p>
+                        </div>
+                   </div>
+                   <div class="col-lg-6 col-md-4 col-sm-6">
+                        <div class="single-services mb-30 text-center">
+                            <i class="flaticon-null-3"></i>
+                            <p>1 Gbps Data Rate</p>
+                        </div>
+                   </div>
+               </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- service Area End -->  
+
+<!--? Pricing Card Start -->
+<section class="pricing-card-area section-padding2" id="packages">
+    <div class="container">
+        <!-- Section Tittle -->
+        <div class="row justify-content-center">
+            <div class="col-xl-6 col-lg-8 col-md-10 col-sm-10">
+                <div class="section-tittle text-center mb-100">
+                    <p>Our pricing plan for you</p>
+                    <h2>No hidden charges! Choose your plan wisely.</h2>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Display Plans -->
+        <div class="row">
+            {% for plan in plans %}
+            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-10">
+                <div class="single-card text-center mb-30">
+                    <div class="card-top">
+                        <p>{{ plan.name }}</p>
+                        <h4>{{ plan.description|default:"High-speed internet access" }}</h4>
+                    </div>
+                    <div class="card-mid">
+                        <h4>${{ plan.price }} <span>/ {{ plan.duration_hours }}hr{% if plan.duration_hours > 1 %}s{% endif %}</span></h4>
+                    </div>
+                    <div class="card-bottom">
+                        <ul>
+                            <li>High-Speed Internet</li>
+                            <li>{{ plan.duration_hours }} Hour{% if plan.duration_hours > 1 %}s{% endif %} Access</li>
+                            <li>No Activation Charges</li>
+                            <li>Instant Connection</li>
+                            <li>24/7 Support</li>
+                        </ul>
+                        <a href="{% url 'select_plan' plan.id %}" class="borders-btn">Select Plan</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-warning text-center">
+                    <h4>No plans available at the moment</h4>
+                    <p>Please contact support for assistance.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Device Info (Debug) -->
+        {% if debug_info %}
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <h5>Connection Information:</h5>
+                    <p><strong>Your IP:</strong> {{ client_ip }}</p>
+                    <p><strong>Device ID:</strong> {{ client_mac }}</p>
+                    <p><strong>Environment:</strong> {{ debug_info.environment|default:environment }}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+<!-- Pricing Card End -->
+
+<!-- Latest Offers Start -->
+<div class="latest-wrapper">
+    <div class="container">
+        <div class="latest-area latest-height section-bg2" data-background="{% static 'assets/img/gallery/section_bg01.png' %}">
+            <div class="row align-items-center justify-content-between">
+                <div class="col-xl-5 col-lg-7">
+                    <div class="latest-caption">
+                        <h2>Check our unbelievable super fast Broadband availability in your area.</h2>
+                    </div>
+                </div>
+                 <div class="col-xl-5 col-lg-5 col-md-10">
+                    <div class="latest-subscribe">
+                        <form action="#" method="post">
+                            {% csrf_token %}
+                            <input type="text" placeholder="Enter Location" name="location">
+                            <button type="submit">Check Now</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Latest Offers End -->
+
+<!--? Contact Section -->
+<section class="about-area2 testimonial-area section-padding30 fix" id="contact">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 col-md-9 col-sm-9">
+                <div class="about-caption">
+                    <!-- Section Tittle -->
+                    <div class="section-tittle mb-55">
+                        <h2>Need Help Getting Connected?</h2>
+                    </div>
+                    <div class="single-testimonial">
+                        <div class="testimonial-caption">
+                            <p>Our support team is available 24/7 to help you get connected. Whether you have questions about our plans or need technical assistance, we're here to help.</p>
+                            <div class="rattiong-caption">
+                                <span>Support Team <span>Available 24/7</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="contact-info mt-4">
+                        <p><strong>Phone:</strong> (+84) 939 512 999</p>
+                        <p><strong>Email:</strong> info@office.com</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5 col-md-11 col-sm-11">
+                <!-- about-img -->
+                <div class="about-img2">
+                    <img src="{% static 'assets/img/gallery/about2.png' %}" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Contact Section End -->
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .alert {
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+    
+    .device-info {
+        background: rgba(255,255,255,0.9);
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 20px;
+    }
+    
+    .contact-info p {
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
+    
+    .borders-btn:hover {
+        background-color: #007bff;
+        color: white;
+        transform: translateY(-2px);
+        transition: all 0.3s ease;
+    }
+</style>
+{% endblock %}
+
+{% comment %}{% extends 'base.html' %}
 
 {% block title %}WiFi Access - Select Plan{% endblock %}
 
@@ -26,3 +283,5 @@
     <p>🔒 Secure Payment • 📱 All Devices Supported • ⚡ Instant Access</p>
 </div>
 {% endblock %}
+
+{% endcomment %}

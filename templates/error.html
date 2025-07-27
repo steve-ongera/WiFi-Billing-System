@@ -1,4 +1,81 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Connection Error{% endblock %}
+
+{% block content %}
+<section class="pricing-card-area section-padding2">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-8 col-lg-10">
+                <div class="text-center">
+                    <div class="error-icon mb-4">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 80px; color: #dc3545;"></i>
+                    </div>
+                    <h2 class="mb-3">Connection Error</h2>
+                    <p class="mb-4">{{ error }}</p>
+                    
+                    {% if debug_info %}
+                    <div class="debug-info bg-light p-4 rounded mb-4">
+                        <h5>Debug Information</h5>
+                        <p><strong>Your IP:</strong> {{ debug_info.ip }}</p>
+                        <p><strong>Environment:</strong> {{ debug_info.environment }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mt-4">
+                        <a href="{% url 'portal_login' %}" class="btn hero-btn me-3">Try Again</a>
+                        <a href="#contact" class="btn borders-btn">Contact Support</a>
+                    </div>
+                    
+                    <div class="mt-5">
+                        <div class="alert alert-warning">
+                            <h5>Troubleshooting Tips:</h5>
+                            <ul class="text-left">
+                                <li>Make sure you're connected to the WiFi network</li>
+                                <li>Try refreshing the page</li>
+                                <li>Clear your browser cache and cookies</li>
+                                <li>Contact support if the problem persists</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .debug-info {
+        border: 1px solid #e9ecef;
+        background-color: #f8f9fa;
+        text-align: left;
+    }
+    
+    .text-left {
+        text-align: left;
+    }
+    
+    .alert ul {
+        margin-bottom: 0;
+        padding-left: 20px;
+    }
+    
+    .error-icon {
+        animation: shake 0.5s ease-in-out;
+    }
+    
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+</style>
+{% endblock %}
+
+{% comment %}{% extends 'base.html' %}
 
 {% block title %}Error - WiFi Portal{% endblock %}
 
@@ -12,3 +89,5 @@
     <a href="/" class="btn">Try Again</a>
 </div>
 {% endblock %}
+
+{% endcomment %}

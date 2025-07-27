@@ -1,4 +1,75 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Connected Successfully!{% endblock %}
+
+{% block content %}
+<section class="pricing-card-area section-padding2">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-8 col-lg-10">
+                <div class="text-center">
+                    <div class="success-icon mb-4">
+                        <i class="fas fa-check-circle" style="font-size: 80px; color: #28a745;"></i>
+                    </div>
+                    <h2 class="mb-3">You're Connected!</h2>
+                    <p class="mb-4">Welcome to Wavex Internet. Your connection is now active.</p>
+                    
+                    <div class="connection-info bg-light p-4 rounded">
+                        <h4>Connection Details</h4>
+                        <p><strong>Session Expires:</strong> {{ expires_at|date:"M d, Y H:i" }}</p>
+                        <p><strong>Amount Paid:</strong> ${{ session.payment_amount }}</p>
+                        <p><strong>Status:</strong> <span class="text-success">Active</span></p>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="https://google.com" class="btn hero-btn me-3" target="_blank">Start Browsing</a>
+                        <a href="{% url 'portal_login' %}" class="btn borders-btn">Back to Portal</a>
+                    </div>
+                    
+                    <div class="mt-5">
+                        <div class="alert alert-info">
+                            <h5>Need Help?</h5>
+                            <p>If you experience any connection issues, please contact our support team:</p>
+                            <p><strong>Phone:</strong> (+84) 939 512 999 | <strong>Email:</strong> info@office.com</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .connection-info {
+        border: 1px solid #e9ecef;
+        background-color: #f8f9fa;
+    }
+    
+    .success-icon {
+        animation: bounce 1s ease-in-out;
+    }
+    
+    @keyframes bounce {
+        0%, 20%, 60%, 100% {
+            transform: translateY(0);
+        }
+        40% {
+            transform: translateY(-10px);
+        }
+        80% {
+            transform: translateY(-5px);
+        }
+    }
+    
+    .me-3 {
+        margin-right: 1rem;
+    }
+</style>
+{% endblock %}
+{% comment %}{% extends 'base.html' %}
 
 {% block title %}Internet Access Granted{% endblock %}
 
@@ -52,3 +123,4 @@ setInterval(updateCountdown, 1000);
 updateCountdown(); // Initial call
 </script>
 {% endblock %}
+{% endcomment %}

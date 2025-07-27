@@ -7,6 +7,30 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Environment detection
 ENVIRONMENT = os.getenv('DJANGO_ENV', 'development')  # 'development' or 'production'
 
+# Development settings
+if ENVIRONMENT == 'development':
+    DISABLE_CAPTIVE_PORTAL = False  # Set to True to disable middleware completely
+    TRAFFIC_CONTROL_METHOD = 'simulation'
+    
+    # Add debug logging
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+            },
+        },
+        'loggers': {
+            'wifi_portal.middleware': {
+                'handlers': ['console'],
+                'level': 'DEBUG',
+                'propagate': True,
+            },
+        },
+    }
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
@@ -104,8 +128,16 @@ USE_I18N = True
 USE_TZ = True
 
 
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# Folder where collectstatic will collect static files for production (e.g. for deployment)
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Additional directories where Django will look for static files
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 # Payment settings
 STRIPE_PUBLIC_KEY = 'your-stripe-public-key'
