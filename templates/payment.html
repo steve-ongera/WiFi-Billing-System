@@ -1,0 +1,108 @@
+{% extends 'wifi_portal/base.html' %}
+
+{% block title %}Payment - {{ plan.name }}{% endblock %}
+
+{% block content %}
+<h2>Complete Your Payment</h2>
+
+<div class="plan-card">
+    <div class="plan-name">{{ plan.name }}</div>
+    <div class="plan-price">${{ plan.price }}</div>
+    <div class="plan-duration">{{ plan.duration_hours }} hours access</div>
+</div>
+
+<div class="payment-form">
+    <form id="payment-form">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="email">Email Address:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="card-number">Card Number:</label>
+            <input type="text" id="card-number" name="card_number" placeholder="1234 5678 9012 3456" required>
+        </div>
+        
+        <div style="display: flex; gap: 1rem;">
+            <div class="form-group" style="flex: 1;">
+                <label for="expiry">Expiry Date:</label>
+                <input type="text" id="expiry" name="expiry" placeholder="MM/YY" required>
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label for="cvc">CVC:</label>
+                <input type="text" id="cvc" name="cvc" placeholder="123" required>
+            </div>
+        </div>
+        
+        <button type="submit" class="btn" id="submit-payment">
+            Pay ${{ plan.price }} Now
+        </button>
+    </form>
+</div>
+
+<div style="text-align: center; margin-top: 1rem; color: #666; font-size: 0.8rem;">
+    <p>🔒 Your payment is secure and encrypted</p>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('payment-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('submit-payment');
+    submitBtn.textContent = 'Processing...';
+    submitBtn.disabled = true;
+    
+    // Simulate payment processing (replace with actual payment gateway)
+    const paymentData = {
+        email: document.getElementById('email').value,
+        card_number: document.getElementById('card-number').value,
+        expiry: document.getElementById('expiry').value,
+        cvc: document.getElementById('cvc').value
+    };
+    
+    fetch('/process-payment/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify(paymentData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = data.redirect;
+        } else {
+            alert('Payment failed: ' + data.error);
+            submitBtn.textContent = 'Pay ${{ plan.price }} Now';
+            submitBtn.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Payment processing failed. Please try again.');
+        submitBtn.textContent = 'Pay ${{ plan.price }} Now';
+        submitBtn.disabled = false;
+    });
+});
+
+// Simple card number formatting
+document.getElementById('card-number').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+    e.target.value = value;
+});
+
+// Expiry date formatting
+document.getElementById('expiry').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length >= 2) {
+        value = value.substring(0, 2) + '/' + value.substring(2, 4);
+    }
+    e.target.value = value;
+});
+</script>
+{% endblock %}

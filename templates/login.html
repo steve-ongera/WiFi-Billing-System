@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}WiFi Access - Select Plan{% endblock %}
+
+{% block content %}
+<div class="device-info">
+    <strong>Device Information:</strong><br>
+    IP Address: {{ client_ip }}<br>
+    MAC Address: {{ client_mac }}
+</div>
+
+<h2>Welcome to Our WiFi Network</h2>
+<p>Please select a plan to access the internet:</p>
+
+{% for plan in plans %}
+<div class="plan-card">
+    <div class="plan-name">{{ plan.name }}</div>
+    <div class="plan-price">${{ plan.price }}</div>
+    <div class="plan-duration">{{ plan.duration_hours }} hours access</div>
+    <div class="plan-description">{{ plan.description }}</div>
+    <a href="{% url 'select_plan' plan.id %}" class="btn">Select This Plan</a>
+</div>
+{% endfor %}
+
+<div style="text-align: center; margin-top: 2rem; color: #666; font-size: 0.9rem;">
+    <p>🔒 Secure Payment • 📱 All Devices Supported • ⚡ Instant Access</p>
+</div>
+{% endblock %}

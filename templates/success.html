@@ -1,0 +1,54 @@
+{% extends 'wifi_portal/base.html' %}
+
+{% block title %}Internet Access Granted{% endblock %}
+
+{% block content %}
+<div class="success-message">
+    <h2>🎉 Payment Successful!</h2>
+    <p>You now have internet access until {{ session.expires_at|date:"M d, Y H:i" }}</p>
+</div>
+
+<div class="timer">
+    <p>Time remaining:</p>
+    <div class="countdown" id="countdown"></div>
+</div>
+
+<div style="text-align: center; margin-top: 2rem;">
+    <p><strong>Enjoy your internet access!</strong></p>
+    <p>You can now browse the internet freely.</p>
+</div>
+
+<div style="text-align: center; margin-top: 2rem; color: #666; font-size: 0.9rem;">
+    <p>Need help? Contact support at <strong>support@example.com</strong></p>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Countdown timer
+function updateCountdown() {
+    const expiryTime = new Date('{{ session.expires_at|date:"c" }}').getTime();
+    const now = new Date().getTime();
+    const distance = expiryTime - now;
+    
+    if (distance > 0) {
+        const hours = Math.floor(distance / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        
+        document.getElementById('countdown').innerHTML = 
+            hours + 'h ' + minutes + 'm ' + seconds + 's';
+    } else {
+        document.getElementById('countdown').innerHTML = 'EXPIRED';
+        // Optionally redirect to login page
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 5000);
+    }
+}
+
+// Update countdown every second
+setInterval(updateCountdown, 1000);
+updateCountdown(); // Initial call
+</script>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'wifi_portal/base.html' %}
+
+{% block title %}Error - WiFi Portal{% endblock %}
+
+{% block content %}
+<div class="error-message">
+    <h2>❌ Error</h2>
+    <p>{{ error }}</p>
+</div>
+
+<div style="text-align: center; margin-top: 2rem;">
+    <a href="/" class="btn">Try Again</a>
+</div>
+{% endblock %}
