@@ -4,6 +4,8 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Environment detection
+ENVIRONMENT = os.getenv('DJANGO_ENV', 'development')  # 'development' or 'production'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -45,7 +47,7 @@ ROOT_URLCONF = 'wifi_billing_system.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -109,10 +111,16 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STRIPE_PUBLIC_KEY = 'your-stripe-public-key'
 STRIPE_SECRET_KEY = 'your-stripe-secret-key'
 
-# Router settings (adjust based on your router)
-ROUTER_IP = '192.168.1.1'
+# Router settings for production (mobile hotspot)
+ROUTER_IP = '10.54.22.92'
 ROUTER_USERNAME = 'admin'
 ROUTER_PASSWORD = 'admin'
+
+# Network interface settings
+NETWORK_INTERFACE = 'wlan0'  # Adjust based on your setup
+
+# Traffic control method
+TRAFFIC_CONTROL_METHOD = 'iptables'  # 'iptables', 'router_api', or 'simulation'
 
 
 # Default primary key field type

@@ -42,8 +42,8 @@ cd wifi_billing
 python manage.py startapp wifi_portal
 
 # Create necessary directories
-mkdir -p wifi_portal/templates/wifi_portal
-mkdir -p wifi_portal/management/commands
+mkdir -p templates/wifi_portal
+mkdir -p management/commands
 mkdir -p static
 ```
 
@@ -368,7 +368,7 @@ class UsageStatistics(models.Model):
 # Add analytics view
 def analytics_dashboard(request):
     stats = UsageStatistics.objects.all().order_by('-date')[:30]
-    return render(request, 'wifi_portal/analytics.html', {'stats': stats})
+    return render(request, 'analytics.html', {'stats': stats})
 ```
 
 ## Troubleshooting
