@@ -7,28 +7,28 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Environment detection
 ENVIRONMENT = os.getenv('DJANGO_ENV', 'development')  # 'development' or 'production'
 
-# Development settings
-if ENVIRONMENT == 'development':
-    DISABLE_CAPTIVE_PORTAL = False  # Set to True to disable middleware completely
-    TRAFFIC_CONTROL_METHOD = 'simulation'
+# # Development settings
+# if ENVIRONMENT == 'development':
+#     DISABLE_CAPTIVE_PORTAL = False  # Set to True to disable middleware completely
+#     TRAFFIC_CONTROL_METHOD = 'simulation'
     
-    # Add debug logging
-    LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'handlers': {
-            'console': {
-                'class': 'logging.StreamHandler',
-            },
-        },
-        'loggers': {
-            'wifi_portal.middleware': {
-                'handlers': ['console'],
-                'level': 'DEBUG',
-                'propagate': True,
-            },
-        },
-    }
+#     # Add debug logging
+#     LOGGING = {
+#         'version': 1,
+#         'disable_existing_loggers': False,
+#         'handlers': {
+#             'console': {
+#                 'class': 'logging.StreamHandler',
+#             },
+#         },
+#         'loggers': {
+#             'wifi_portal.middleware': {
+#                 'handlers': ['console'],
+#                 'level': 'DEBUG',
+#                 'propagate': True,
+#             },
+#         },
+#     }
 
 
 # Quick-start development settings - unsuitable for production

@@ -25,22 +25,42 @@
                         <div class="payment-form">
                             <form id="payment-form" method="post">
                                 {% csrf_token %}
+                                
+                                <!-- Email Field -->
                                 <div class="form-group mb-3">
-                                    <input type="text" class="form-control" placeholder="Card Number" required>
+                                    <input type="email" id="email" name="email" class="form-control" placeholder="Email Address" required>
                                 </div>
+                                
+                                <!-- Card Number -->
+                                <div class="form-group mb-3">
+                                    <input type="text" id="card-number" name="card_number" class="form-control" placeholder="Card Number (1234 5678 9012 3456)" maxlength="19" required>
+                                </div>
+                                
+                                <!-- Expiry and CVC -->
                                 <div class="row">
                                     <div class="col-6">
-                                        <input type="text" class="form-control" placeholder="MM/YY" required>
+                                        <input type="text" id="expiry" name="expiry" class="form-control" placeholder="MM/YY" maxlength="5" required>
                                     </div>
                                     <div class="col-6">
-                                        <input type="text" class="form-control" placeholder="CVC" required>
+                                        <input type="text" id="cvc" name="cvc" class="form-control" placeholder="CVC" maxlength="4" required>
                                     </div>
                                 </div>
+                                
+                                <!-- Cardholder Name -->
                                 <div class="form-group mt-3">
-                                    <input type="text" class="form-control" placeholder="Cardholder Name" required>
+                                    <input type="text" id="cardholder-name" name="cardholder_name" class="form-control" placeholder="Cardholder Name" required>
                                 </div>
-                                <button type="submit" class="btn hero-btn mt-3">Pay ${{ plan.price }}</button>
+                                
+                                <!-- Payment Button -->
+                                <button type="submit" id="submit-payment" class="btn hero-btn mt-3">
+                                    Pay ${{ plan.price }}
+                                </button>
                             </form>
+                            
+                            <!-- Security Notice -->
+                            <div class="security-notice mt-3">
+                                <p><i class="fas fa-lock"></i> Your payment is secure and encrypted</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -62,6 +82,23 @@
         border-radius: 5px;
         margin-bottom: 15px;
         width: 100%;
+        transition: border-color 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #007bff;
+        outline: none;
+        box-shadow: 0 0 5px rgba(0,123,255,0.3);
+    }
+    
+    .form-control.error {
+        border-color: #dc3545;
+        background-color: #fff5f5;
+    }
+    
+    .form-control.success {
+        border-color: #28a745;
+        background-color: #f8fff9;
     }
     
     .payment-form {
@@ -69,7 +106,276 @@
         margin: 0 auto;
         padding: 20px;
     }
+    
+    .security-notice {
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    .security-notice i {
+        color: #28a745;
+        margin-right: 5px;
+    }
+    
+    .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    
+    .loading-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #fff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 8px;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .error-message {
+        color: #dc3545;
+        font-size: 0.8rem;
+        margin-top: 5px;
+        display: none;
+    }
+    
+    .form-group {
+        position: relative;
+    }
 </style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('payment-form');
+    const submitBtn = document.getElementById('submit-payment');
+    const cardNumberInput = document.getElementById('card-number');
+    const expiryInput = document.getElementById('expiry');
+    const cvcInput = document.getElementById('cvc');
+    const emailInput = document.getElementById('email');
+    
+    // Card number formatting and validation
+    cardNumberInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        
+        // Format with spaces every 4 digits
+        value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+        
+        // Limit to 19 characters (16 digits + 3 spaces)
+        if (value.length > 19) {
+            value = value.substring(0, 19);
+        }
+        
+        e.target.value = value;
+        
+        // Basic validation
+        const rawValue = value.replace(/\s/g, '');
+        if (rawValue.length >= 13 && rawValue.length <= 16) {
+            e.target.classList.remove('error');
+            e.target.classList.add('success');
+        } else {
+            e.target.classList.remove('success');
+            if (rawValue.length > 0) {
+                e.target.classList.add('error');
+            }
+        }
+    });
+    
+    // Expiry date formatting (MM/YY)
+    expiryInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        
+        if (value.length >= 2) {
+            value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        }
+        
+        e.target.value = value;
+        
+        // Basic validation
+        if (value.length === 5) {
+            const [month, year] = value.split('/');
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear() % 100;
+            const currentMonth = currentDate.getMonth() + 1;
+            
+            if (month >= 1 && month <= 12 && 
+                (year > currentYear || (year == currentYear && month >= currentMonth))) {
+                e.target.classList.remove('error');
+                e.target.classList.add('success');
+            } else {
+                e.target.classList.remove('success');
+                e.target.classList.add('error');
+            }
+        }
+    });
+    
+    // CVC validation (3-4 digits)
+    cvcInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        e.target.value = value;
+        
+        if (value.length >= 3 && value.length <= 4) {
+            e.target.classList.remove('error');
+            e.target.classList.add('success');
+        } else {
+            e.target.classList.remove('success');
+            if (value.length > 0) {
+                e.target.classList.add('error');
+            }
+        }
+    });
+    
+    // Email validation
+    emailInput.addEventListener('blur', function(e) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailRegex.test(e.target.value)) {
+            e.target.classList.remove('error');
+            e.target.classList.add('success');
+        } else {
+            e.target.classList.remove('success');
+            e.target.classList.add('error');
+        }
+    });
+    
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Disable submit button and show loading
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="loading-spinner"></span>Processing...';
+        
+        // Collect form data
+        const paymentData = {
+            email: emailInput.value,
+            card_number: cardNumberInput.value,
+            expiry: expiryInput.value,
+            cvc: cvcInput.value,
+            cardholder_name: document.getElementById('cardholder-name').value
+        };
+        
+        // Basic client-side validation
+        if (!validateForm(paymentData)) {
+            resetSubmitButton();
+            return;
+        }
+        
+        // Send payment request
+        fetch('{% url "process_payment" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify(paymentData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Success - redirect to success page
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Payment Successful!';
+                setTimeout(() => {
+                    window.location.href = data.redirect;
+                }, 1500);
+            } else {
+                // Payment failed
+                showError(data.error || 'Payment failed. Please try again.');
+                resetSubmitButton();
+            }
+        })
+        .catch(error => {
+            console.error('Payment Error:', error);
+            showError('Payment processing failed. Please check your connection and try again.');
+            resetSubmitButton();
+        });
+    });
+    
+    function validateForm(data) {
+        let isValid = true;
+        
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(data.email)) {
+            emailInput.classList.add('error');
+            isValid = false;
+        }
+        
+        // Card number validation (basic Luhn algorithm check would be better)
+        const cardNumber = data.card_number.replace(/\s/g, '');
+        if (cardNumber.length < 13 || cardNumber.length > 16) {
+            cardNumberInput.classList.add('error');
+            isValid = false;
+        }
+        
+        // Expiry validation
+        if (data.expiry.length !== 5 || !data.expiry.includes('/')) {
+            expiryInput.classList.add('error');
+            isValid = false;
+        }
+        
+        // CVC validation
+        if (data.cvc.length < 3 || data.cvc.length > 4) {
+            cvcInput.classList.add('error');
+            isValid = false;
+        }
+        
+        // Cardholder name validation
+        if (data.cardholder_name.trim().length < 2) {
+            document.getElementById('cardholder-name').classList.add('error');
+            isValid = false;
+        }
+        
+        if (!isValid) {
+            showError('Please check all fields and try again.');
+        }
+        
+        return isValid;
+    }
+    
+    function resetSubmitButton() {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Pay ${{ plan.price }}';
+    }
+    
+    function showError(message) {
+        // Remove any existing error messages
+        const existingError = document.querySelector('.payment-error');
+        if (existingError) {
+            existingError.remove();
+        }
+        
+        // Create and show new error message
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'alert alert-danger payment-error mt-3';
+        errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+        
+        const paymentForm = document.querySelector('.payment-form');
+        paymentForm.appendChild(errorDiv);
+        
+        // Auto-remove error after 10 seconds
+        setTimeout(() => {
+            if (errorDiv.parentNode) {
+                errorDiv.remove();
+            }
+        }, 10000);
+    }
+    
+    // Clear error styling when user starts typing
+    const inputs = [cardNumberInput, expiryInput, cvcInput, emailInput, document.getElementById('cardholder-name')];
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            this.classList.remove('error');
+        });
+    });
+});
+</script>
 {% endblock %}
 
 {% comment %}{% extends 'base.html' %}

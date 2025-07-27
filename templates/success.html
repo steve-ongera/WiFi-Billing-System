@@ -15,11 +15,19 @@
                     <h2 class="mb-3">You're Connected!</h2>
                     <p class="mb-4">Welcome to Wavex Internet. Your connection is now active.</p>
                     
-                    <div class="connection-info bg-light p-4 rounded">
+                    <div class="connection-info bg-light p-4 rounded mb-4">
                         <h4>Connection Details</h4>
                         <p><strong>Session Expires:</strong> {{ expires_at|date:"M d, Y H:i" }}</p>
                         <p><strong>Amount Paid:</strong> ${{ session.payment_amount }}</p>
                         <p><strong>Status:</strong> <span class="text-success">Active</span></p>
+                    </div>
+                    
+                    <!-- Countdown Timer Section -->
+                    <div class="timer-section mb-4">
+                        <div class="timer-box bg-primary text-white p-3 rounded">
+                            <p class="mb-2"><strong>Time Remaining:</strong></p>
+                            <div class="countdown display-4 font-weight-bold" id="countdown">Loading...</div>
+                        </div>
                     </div>
                     
                     <div class="mt-4">
@@ -67,31 +75,41 @@
     .me-3 {
         margin-right: 1rem;
     }
+    
+    .timer-section {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    
+    .timer-box {
+        background: linear-gradient(135deg, #007bff, #0056b3) !important;
+        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+        border: none;
+    }
+    
+    .countdown {
+        font-family: 'Courier New', monospace;
+        letter-spacing: 2px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .timer-expired {
+        background: linear-gradient(135deg, #dc3545, #c82333) !important;
+        animation: pulse 1s infinite;
+    }
+    
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
 </style>
-{% endblock %}
-{% comment %}{% extends 'base.html' %}
-
-{% block title %}Internet Access Granted{% endblock %}
-
-{% block content %}
-<div class="success-message">
-    <h2>🎉 Payment Successful!</h2>
-    <p>You now have internet access until {{ session.expires_at|date:"M d, Y H:i" }}</p>
-</div>
-
-<div class="timer">
-    <p>Time remaining:</p>
-    <div class="countdown" id="countdown"></div>
-</div>
-
-<div style="text-align: center; margin-top: 2rem;">
-    <p><strong>Enjoy your internet access!</strong></p>
-    <p>You can now browse the internet freely.</p>
-</div>
-
-<div style="text-align: center; margin-top: 2rem; color: #666; font-size: 0.9rem;">
-    <p>Need help? Contact support at <strong>support@example.com</strong></p>
-</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -102,18 +120,31 @@ function updateCountdown() {
     const now = new Date().getTime();
     const distance = expiryTime - now;
     
+    const countdownElement = document.getElementById('countdown');
+    const timerBox = document.querySelector('.timer-box');
+    
     if (distance > 0) {
         const hours = Math.floor(distance / (1000 * 60 * 60));
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
         
-        document.getElementById('countdown').innerHTML = 
-            hours + 'h ' + minutes + 'm ' + seconds + 's';
+        countdownElement.innerHTML = 
+            String(hours).padStart(2, '0') + ':' + 
+            String(minutes).padStart(2, '0') + ':' + 
+            String(seconds).padStart(2, '0');
     } else {
-        document.getElementById('countdown').innerHTML = 'EXPIRED';
-        // Optionally redirect to login page
+        countdownElement.innerHTML = 'EXPIRED';
+        timerBox.classList.add('timer-expired');
+        
+        // Show expiration message
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-danger mt-3';
+        alertDiv.innerHTML = '<strong>Session Expired!</strong> Your internet access has ended. Redirecting to login page...';
+        document.querySelector('.timer-section').appendChild(alertDiv);
+        
+        // Optionally redirect to login page after 5 seconds
         setTimeout(() => {
-            window.location.href = '/';
+            window.location.href = '{% url "portal_login" %}';
         }, 5000);
     }
 }
@@ -123,4 +154,3 @@ setInterval(updateCountdown, 1000);
 updateCountdown(); // Initial call
 </script>
 {% endblock %}
-{% endcomment %}
